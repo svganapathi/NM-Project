@@ -2,11 +2,9 @@ import streamlit as st
 import re
 import time
 
-# Function to handle chatbot responses based on user input
+# Function to handle chatbot responses
 def get_chatbot_response(user_input):
     user_input = user_input.lower().strip()
-    
-    # Dictionary of patterns and responses
     responses = {
         r"(hi|hello|hey)": "Hello! Welcome to our customer support chatbot. How can I assist you today?",
         r"track.*order|order.*status": "Please provide your order ID, and I'll check the status for you!",
@@ -34,16 +32,12 @@ def get_chatbot_response(user_input):
         r"loyalty.*program|rewards": "Our loyalty program offers points for every purchase. Visit our website or provide your account ID to check your rewards.",
         r"international.*shipping|ship.*overseas": "We offer international shipping to select countries. Please provide your country for shipping details."
     }
-    
-    # Check for matching patterns
     for pattern, response in responses.items():
         if re.search(pattern, user_input):
             return response
-    
-    # Default response for unrecognized queries
     return "I'm sorry, I didn't understand that. Could you please clarify or ask something else?"
 
-# Autocomplete suggestions
+# Predefined suggestions
 SUGGESTIONS = [
     "Hi",
     "Track my order",
@@ -72,82 +66,56 @@ SUGGESTIONS = [
     "International shipping"
 ]
 
-# Streamlit app configuration
-st.set_page_config(
-    page_title="Intelligent Customer Support Chatbot",
-    page_icon="🤖",
-    layout="centered"
-)
+# Streamlit page configuration
+st.set_page_config(page_title="Intelligent Customer Support Chatbot", page_icon="🤖", layout="centered")
 
-# Main Streamlit app
+# Main app
 def main():
     st.title("Revolutionizing Customer Support")
     st.subheader("Intelligent Chatbot for Automated Assistance")
-    
-    # Initialize session state for chat history and input clearing
+
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {"role": "assistant", "content": "Hello! I'm your intelligent customer support chatbot. How can I help you today?"}
         ]
-    if "clear_input" not in st.session_state:
-        st.session_state.clear_input = False
+    if "input_text" not in st.session_state:
+        st.session_state.input_text = ""
 
-    # Text input for filtering suggestions
-    typed_input = st.text_input(
-        "Start typing to see suggestions:",
-        value="" if st.session_state.clear_input else st.session_state.get("typed_input_value", ""),
-        key="typed_input"
-    )
-    
-    # Store the typed input in session state for persistence
-    st.session_state.typed_input_value = typed_input
-    
-    # Filter suggestions based on typed input
-    filtered_suggestions = [s for s in SUGGESTIONS if typed_input.lower() in s.lower()] if typed_input else SUGGESTIONS
-    
-    # Display suggestions as clickable buttons
-    if filtered_suggestions:
-        st.write("Suggestions:")
-        for suggestion in filtered_suggestions[:5]:  # Limit to 5 suggestions for brevity
-            if st.button(suggestion):
-                input_to_process = suggestion
-                # Process the suggestion as user input
-                st.session_state.messages.append({"role": "user", "content": input_to_process})
-                with st.chat_message("user"):
-                    st.markdown(input_to_process)
-                with st.chat_message("assistant"):
-                    with st.spinner("Thinking..."):
-                        time.sleep(1)
-                        response = get_chatbot_response(input_to_process)
-                        st.markdown(response)
-                st.session_state.messages.append({"role": "assistant", "content": response})
-                st.session_state.clear_input = True  # Signal to clear input
-    
-    # Chat input for manual submission
-    user_input = st.chat_input("Type your question and press Enter:", key="chat_input")
-    
-    # Display chat history
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-    
-    # Process manual chat input
+    # Input box with Google-style suggestions
+    user_input = st.text_input("Type your question:", value=st.session_state.input_text, key="input_text")
+
+    # Dynamic autocomplete suggestions
     if user_input:
-        st.session_state.messages.append({"role": "user", "content": user_input})
+        filtered = [s for s in SUGGESTIONS if user_input.lower() in s.lower()]
+        if filtered:
+            st.markdown("**Suggestions:**")
+            for suggestion in filtered[:5]:
+                if st.button(suggestion, key=suggestion):
+                    st.session_state.input_text = suggestion
+                    st.experimental_rerun()
+
+    # Manual send button
+    if st.button("Send") and st.session_state.input_text.strip():
+        input_to_process = st.session_state.input_text.strip()
+        st.session_state.messages.append({"role": "user", "content": input_to_process})
         with st.chat_message("user"):
-            st.markdown(user_input)
+            st.markdown(input_to_process)
+
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 time.sleep(1)
-                response = get_chatbot_response(user_input)
+                response = get_chatbot_response(input_to_process)
                 st.markdown(response)
-        st.session_state.messages.append({"role": "assistant", "content": response})
-        st.session_state.clear_input = True  # Signal to clear input
-    
-    # Reset clear_input flag after processing
-    if st.session_state.clear_input:
-        st.session_state.clear_input = False
 
-# Run the app
+        st.session_state.messages.append({"role": "assistant", "content": response})
+        st.session_state.input_text = ""
+        st.experimental_rerun()
+
+    # Chat history display
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+# Run app
 if __name__ == "__main__":
     main()
