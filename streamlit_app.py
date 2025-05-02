@@ -4,58 +4,45 @@ import time
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Main pattern-based response function
+# Function to get chatbot response using regex or fallback
 def get_chatbot_response(user_input):
     user_input = user_input.lower().strip()
 
-    # Responses dictionary with expanded entries
     responses = {
         r"(hi|hello|hey)": "Hello! Welcome to our customer support chatbot. How can I assist you today?",
         r"track.*order|order.*status": "Please provide your order ID, and I'll check the status for you!",
-        r"return.*policy|how.*return": "Our return policy allows returns within 30 days of purchase. Please visit our website or provide your order ID for detailed instructions.",
+        r"return.*policy|how.*return": "You can return items within 30 days. Need help with a return?",
         r"contact.*support|talk.*human": "You can reach our human support team at support@example.com or call 1-800-123-4567.",
         r"product.*info|tell.*products": "We offer a wide range of products! Could you specify which product or category you're interested in?",
         r"thank.*|thanks": "You're welcome! Happy to help.",
         r"bye|goodbye": "Goodbye! Feel free to reach out anytime.",
         r"payment.*issue|problem.*payment": "Sorry to hear about your payment issue. Please check your payment method or contact support@example.com for assistance.",
-        r"delivery.*time|when.*deliver": "Delivery times depend on your location. Please provide your order ID or zip code for an estimated delivery date.",
-        r"account.*login|can\'t.*login": "If you're having trouble logging in, try resetting your password or contact support@example.com for help.",
+        r"delivery.*time|when.*deliver": "Delivery times depend on your location. Please provide your order ID or zip code.",
+        r"account.*login|can\'t.*login": "If you're having trouble logging in, try resetting your password or contact support@example.com.",
         r"product.*available|in.*stock": "Could you specify the product name or ID? I'll check its availability for you.",
-        r"cancel.*order|how.*cancel": "To cancel an order, please provide your order ID. Note that cancellations are possible within 24 hours of purchase.",
-        r"discount.*code|promo.*code": "Check our website for current promotions or enter a valid promo code at checkout. Need help? Let me know!",
-        r"refund.*status|where.*refund": "Please provide your order ID, and I'll check the status of your refund.",
-        r"change.*address|update.*address": "To update your shipping address, please provide your order ID. Note that changes are possible before the order ships.",
-        r"warranty.*info|product.*warranty": "Most products come with a 1-year warranty. Please provide the product name or order ID for specific warranty details.",
-        r"modify.*order|change.*order": "To modify your order, please provide your order ID. Modifications are possible within 24 hours of purchase.",
-        r"gift.*card|use.*gift.*card": "Gift cards can be applied at checkout. Please provide the gift card code for balance or usage details.",
-        r"technical.*support|tech.*issue": "For technical issues, please describe the problem or contact our tech support team at techsupport@example.com.",
-        r"store.*location|find.*store": "Please provide your city or zip code, and I'll find the nearest store location for you.",
-        r"bulk.*order|wholesale": "For bulk or wholesale orders, please contact our sales team at sales@example.com with your requirements.",
-        r"track.*package|where.*package": "Please provide your tracking number or order ID, and I'll help you track your package.",
-        r"size.*guide|product.*size": "Size guides are available on our website. Please specify the product for detailed sizing information.",
-        r"loyalty.*program|rewards": "Our loyalty program offers points for every purchase. Visit our website or provide your account ID to check your rewards.",
-        r"international.*shipping|ship.*overseas": "We offer international shipping to select countries. Please provide your country for shipping details.",
-        r"app.*crash|app.*not.*working": "Try reinstalling the app or updating it to the latest version. If the issue persists, contact techsupport@example.com.",
-        r"reset.*password|forgot.*password": "You can reset your password using the 'Forgot Password' option on the login page.",
-        r"subscription.*plan|change.*plan": "We offer monthly and yearly subscription plans. Would you like help upgrading or changing your plan?",
-        r"complaint|issue.*service": "We're sorry to hear that. Please describe your issue so we can assist or escalate it appropriately.",
-        r"invoice.*copy|resend.*invoice": "Sure! Please provide your order ID or registered email, and I’ll send a copy of your invoice.",
-        r"open.*hours|business.*hours": "Our customer support is available from 9 AM to 6 PM, Monday through Friday.",
-        r"shipping.*cost|delivery.*fee": "Shipping fees depend on your location and selected delivery option. Would you like to enter your zip code?",
-        r"order.*confirmation|didn’t.*receive.*confirmation": "Please check your spam folder. If you still haven't received confirmation, provide your email or order ID.",
-        r"out.*of.*stock|when.*available": "That item may be temporarily unavailable. Could you share the product name or ID so I can check its restock status?",
-        r"how.*long.*refund": "Refunds typically take 3–5 business days after processing. Let me check your order if you'd like."
+        r"cancel.*order|how.*cancel": "To cancel an order, please provide your order ID. Cancellations are possible within 24 hours of purchase.",
+        r"discount.*code|promo.*code": "Check our website for promotions or use a valid promo code at checkout.",
+        r"refund.*status|where.*refund": "Please provide your order ID, and I'll check your refund status.",
+        r"change.*address|update.*address": "To update your shipping address, please provide your order ID.",
+        r"warranty.*info|product.*warranty": "Most products include a 1-year warranty. Please specify the product for details.",
+        r"modify.*order|change.*order": "To modify your order, provide the order ID. Changes allowed within 24 hours.",
+        r"gift.*card|use.*gift.*card": "Gift cards can be used at checkout. Provide the code to check balance or usage.",
+        r"technical.*support|tech.*issue": "Describe your issue or contact our tech team at techsupport@example.com.",
+        r"store.*location|find.*store": "Please provide your city or zip code to find the nearest store.",
+        r"bulk.*order|wholesale": "For wholesale orders, contact our sales team at sales@example.com.",
+        r"track.*package|where.*package": "Please provide your tracking number or order ID.",
+        r"size.*guide|product.*size": "Check the size guide on the product page. Need help with a specific item?",
+        r"loyalty.*program|rewards": "Our loyalty program offers points for purchases. Provide your account ID to check.",
+        r"international.*shipping|ship.*overseas": "We offer international shipping to selected countries. Where are you located?",
     }
 
-    # Check regex-based responses first
     for pattern, response in responses.items():
         if re.search(pattern, user_input):
             return response
 
-    # Search-style fallback
     return search_like_response(user_input)
 
-# Simulated search-style fallback using keywords
+# Keyword-based fallback response
 def search_like_response(user_input):
     search_db = {
         "track order": "To track your order, visit your account or provide your order ID here.",
@@ -81,31 +68,52 @@ def search_like_response(user_input):
 
     return "I'm sorry, I couldn't find anything relevant. Could you try rephrasing your question?"
 
-# Streamlit UI setup
+# Streamlit config
 st.set_page_config(
-    page_title="Intelligent Customer Support Chatbot",
+    page_title="Customer Support Chatbot",
     page_icon="🤖",
     layout="centered"
 )
 
+# Main app
 def main():
-    st.title("Revolutionizing Customer Support")
-    st.subheader("Intelligent Chatbot for Automated Assistance")
+    st.title("💬 Revolutionizing Customer Support")
+    st.subheader("Ask me anything about your orders, products, or help requests!")
 
+    # Suggested prompts
+    with st.expander("💡 Suggested Questions", expanded=True):
+        cols = st.columns(3)
+        suggestions = [
+            "Track my order",
+            "Return policy",
+            "Talk to a human",
+            "Where's my refund?",
+            "Change delivery address",
+            "Cancel my order",
+            "Do you ship internationally?",
+            "What's the delivery time?"
+        ]
+        for i, suggestion in enumerate(suggestions):
+            if cols[i % 3].button(suggestion):
+                st.session_state["pre_filled_input"] = suggestion
+
+    # Chat history
     if "messages" not in st.session_state:
         st.session_state.messages = [
-            {"role": "assistant", "content": "Hello! I'm your intelligent customer support chatbot. How can I help you today?"}
+            {"role": "assistant", "content": "Hello! I'm your support assistant. How can I help you today?"}
         ]
 
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+    for msg in st.session_state.messages:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
 
-    user_input = st.chat_input("Type your question here...")
+    # Input
+    user_input = st.chat_input("Type your question here...", key="chat_input")
+    if "pre_filled_input" in st.session_state:
+        user_input = st.session_state.pop("pre_filled_input")
 
     if user_input:
         st.session_state.messages.append({"role": "user", "content": user_input})
-
         with st.chat_message("user"):
             st.markdown(user_input)
 
@@ -117,6 +125,6 @@ def main():
 
         st.session_state.messages.append({"role": "assistant", "content": response})
 
-# Run the app
+# Run it
 if __name__ == "__main__":
     main()
