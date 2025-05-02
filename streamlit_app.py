@@ -77,7 +77,7 @@ st.set_page_config(
 
 # Main app
 def main():
-    st.title("🤖 Smart Customer Support Chatbot")
+    st.title("Smart Customer Support 🤖")
     st.subheader("Helping You Quickly with Orders, Returns, and More!")
 
     # Suggested prompts
