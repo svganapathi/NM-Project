@@ -84,50 +84,58 @@ def main():
     st.title("Revolutionizing Customer Support")
     st.subheader("Intelligent Chatbot for Automated Assistance")
     
-    # Initialize session state for chat history
+    # Initialize session state for chat history and input
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {"role": "assistant", "content": "Hello! I'm your intelligent customer support chatbot. How can I help you today?"}
         ]
+    if "typed_input" not in st.session_state:
+        st.session_state.typed_input = ""
 
-    # Autocomplete dropdown
-    selected_suggestion = st.selectbox(
-        "Select or type a question:",
-        [""] + SUGGESTIONS,
-        index=0,
-        key="suggestion_select"
-    )
+    # Text input for filtering suggestions
+    typed_input = st.text_input("Start typing to see suggestions:", key="typed_input")
     
-    # Input field for user query
-    user_input = st.chat_input("Type your question here...", key="chat_input")
+    # Filter suggestions based on typed input
+    filtered_suggestions = [s for s in SUGGESTIONS if typed_input.lower() in s.lower()] if typed_input else SUGGESTIONS
     
-    # Determine the input to process (from selectbox or chat input)
-    input_to_process = selected_suggestion if selected_suggestion else user_input
+    # Display suggestions as clickable buttons
+    if filtered_suggestions:
+        st.write("Suggestions:")
+        for suggestion in filtered_suggestions[:5]:  # Limit to 5 suggestions for brevity
+            if st.button(suggestion):
+                input_to_process = suggestion
+                # Process the suggestion as user input
+                st.session_state.messages.append({"role": "user", "content": input_to_process})
+                with st.chat_message("user"):
+                    st.markdown(input_to_process)
+                with st.chat_message("assistant"):
+                    with st.spinner("Thinking..."):
+                        time.sleep(1)
+                        response = get_chatbot_response(input_to_process)
+                        st.markdown(response)
+                st.session_state.messages.append({"role": "assistant", "content": response})
+                st.session_state.typed_input = ""  # Clear input after submission
+    
+    # Chat input for manual submission
+    user_input = st.chat_input("Type your question and press Enter:", key="chat_input")
     
     # Display chat history
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
     
-    if input_to_process:
-        # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": input_to_process})
-        
-        # Display user message
+    # Process manual chat input
+    if user_input:
+        st.session_state.messages.append({"role": "user", "content": user_input})
         with st.chat_message("user"):
-            st.markdown(input_to_process)
-        
-        # Get and display chatbot response
+            st.markdown(user_input)
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
-                time.sleep(1)  # Simulate processing delay
-                response = get_chatbot_response(input_to_process)
+                time.sleep(1)
+                response = get_chatbot_response(user_input)
                 st.markdown(response)
-        
-        # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
-        # Reset the selectbox after processing
-        st.session_state.suggestion_select = ""
+        st.session_state.typed_input = ""  # Clear input after submission
 
 # Run the app
 if __name__ == "__main__":
