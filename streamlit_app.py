@@ -84,16 +84,23 @@ def main():
     st.title("Revolutionizing Customer Support")
     st.subheader("Intelligent Chatbot for Automated Assistance")
     
-    # Initialize session state for chat history and input
+    # Initialize session state for chat history and input clearing
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {"role": "assistant", "content": "Hello! I'm your intelligent customer support chatbot. How can I help you today?"}
         ]
-    if "typed_input" not in st.session_state:
-        st.session_state.typed_input = ""
+    if "clear_input" not in st.session_state:
+        st.session_state.clear_input = False
 
     # Text input for filtering suggestions
-    typed_input = st.text_input("Start typing to see suggestions:", key="typed_input")
+    typed_input = st.text_input(
+        "Start typing to see suggestions:",
+        value="" if st.session_state.clear_input else st.session_state.get("typed_input_value", ""),
+        key="typed_input"
+    )
+    
+    # Store the typed input in session state for persistence
+    st.session_state.typed_input_value = typed_input
     
     # Filter suggestions based on typed input
     filtered_suggestions = [s for s in SUGGESTIONS if typed_input.lower() in s.lower()] if typed_input else SUGGESTIONS
@@ -114,7 +121,7 @@ def main():
                         response = get_chatbot_response(input_to_process)
                         st.markdown(response)
                 st.session_state.messages.append({"role": "assistant", "content": response})
-                st.session_state.typed_input = ""  # Clear input after submission
+                st.session_state.clear_input = True  # Signal to clear input
     
     # Chat input for manual submission
     user_input = st.chat_input("Type your question and press Enter:", key="chat_input")
@@ -135,7 +142,11 @@ def main():
                 response = get_chatbot_response(user_input)
                 st.markdown(response)
         st.session_state.messages.append({"role": "assistant", "content": response})
-        st.session_state.typed_input = ""  # Clear input after submission
+        st.session_state.clear_input = True  # Signal to clear input
+    
+    # Reset clear_input flag after processing
+    if st.session_state.clear_input:
+        st.session_state.clear_input = False
 
 # Run the app
 if __name__ == "__main__":
