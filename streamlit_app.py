@@ -14,7 +14,25 @@ def get_chatbot_response(user_input):
         r"contact.*support|talk.*human": "You can reach our human support team at support@example.com or call 1-800-123-4567.",
         r"product.*info|tell.*products": "We offer a wide range of products! Could you specify which product or category you're interested in?",
         r"thank.*|thanks": "You're welcome! Happy to help.",
-        r"bye|goodbye": "Goodbye! Feel free to reach out anytime."
+        r"bye|goodbye": "Goodbye! Feel free to reach out anytime.",
+        r"payment.*issue|problem.*payment": "Sorry to hear about your payment issue. Please check your payment method or contact support@example.com for assistance.",
+        r"delivery.*time|when.*deliver": "Delivery times depend on your location. Please provide your order ID or zip code for an estimated delivery date.",
+        r"account.*login|can\'t.*login": "If you're having trouble logging in, try resetting your password or contact support@example.com for help.",
+        r"product.*available|in.*stock": "Could you specify the product name or ID? I'll check its availability for you.",
+        r"cancel.*order|how.*cancel": "To cancel an order, please provide your order ID. Note that cancellations are possible within 24 hours of purchase.",
+        r"discount.*code|promo.*code": "Check our website for current promotions or enter a valid promo code at checkout. Need help? Let me know!",
+        r"refund.*status|where.*refund": "Please provide your order ID, and I'll check the status of your refund.",
+        r"change.*address|update.*address": "To update your shipping address, please provide your order ID. Note that changes are possible before the order ships.",
+        r"warranty.*info|product.*warranty": "Most products come with a 1-year warranty. Please provide the product name or order ID for specific warranty details.",
+        r"modify.*order|change.*order": "To modify your order, please provide your order ID. Modifications are possible within 24 hours of purchase.",
+        r"gift.*card|use.*gift.*card": "Gift cards can be applied at checkout. Please provide the gift card code for balance or usage details.",
+        r"technical.*support|tech.*issue": "For technical issues, please describe the problem or contact our tech support team at techsupport@example.com.",
+        r"store.*location|find.*store": "Please provide your city or zip code, and I'll find the nearest store location for you.",
+        r"bulk.*order|wholesale": "For bulk or wholesale orders, please contact our sales team at sales@example.com with your requirements.",
+        r"track.*package|where.*package": "Please provide your tracking number or order ID, and I'll help you track your package.",
+        r"size.*guide|product.*size": "Size guides are available on our website. Please specify the product for detailed sizing information.",
+        r"loyalty.*program|rewards": "Our loyalty program offers points for every purchase. Visit our website or provide your account ID to check your rewards.",
+        r"international.*shipping|ship.*overseas": "We offer international shipping to select countries. Please provide your country for shipping details."
     }
     
     # Check for matching patterns
