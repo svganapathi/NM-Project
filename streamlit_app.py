@@ -70,15 +70,15 @@ def search_like_response(user_input):
 
 # Streamlit config
 st.set_page_config(
-    page_title="Customer Support Chatbot",
+    page_title="Chatbot",
     page_icon="🤖",
     layout="centered"
 )
 
 # Main app
 def main():
-    st.title("💬 Revolutionizing Customer Support")
-    st.subheader("Ask me anything about your orders, products, or help requests!")
+    st.title("🤖 Smart Customer Support Chatbot")
+    st.subheader("Helping You Quickly with Orders, Returns, and More!")
 
     # Suggested prompts
     with st.expander("💡 Suggested Questions", expanded=True):
