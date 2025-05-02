@@ -43,6 +43,35 @@ def get_chatbot_response(user_input):
     # Default response for unrecognized queries
     return "I'm sorry, I didn't understand that. Could you please clarify or ask something else?"
 
+# Autocomplete suggestions
+SUGGESTIONS = [
+    "Hi",
+    "Track my order",
+    "What is the return policy",
+    "Contact support",
+    "Tell me about your products",
+    "Thanks",
+    "Goodbye",
+    "Payment issue",
+    "Delivery time",
+    "Can't login",
+    "Is this product available",
+    "Cancel my order",
+    "Promo code",
+    "Refund status",
+    "Change address",
+    "Warranty info",
+    "Modify order",
+    "Use gift card",
+    "Technical support",
+    "Find a store",
+    "Bulk order",
+    "Track package",
+    "Size guide",
+    "Loyalty program",
+    "International shipping"
+]
+
 # Streamlit app configuration
 st.set_page_config(
     page_title="Intelligent Customer Support Chatbot",
@@ -55,19 +84,33 @@ def main():
     st.title("Revolutionizing Customer Support")
     st.subheader("Intelligent Chatbot for Automated Assistance")
     
-    # Initialize session state for chat history
+    # Initialize session state for chat history and input
     if "messages" not in st.session_state:
         st.session_state.messages = [
             {"role": "assistant", "content": "Hello! I'm your intelligent customer support chatbot. How can I help you today?"}
         ]
+    if "selected_input" not in st.session_state:
+        st.session_state.selected_input = ""
+
+    # Autocomplete dropdown
+    selected_suggestion = st.selectbox(
+        "Select or type a question:",
+        [""] + SUGGESTIONS,
+        index=0,
+        key="suggestion_select"
+    )
+    
+    # Update session state if a suggestion is selected
+    if selected_suggestion:
+        st.session_state.selected_input = selected_suggestion
+
+    # Input field for user query
+    user_input = st.chat_input("Type your question here...", key="chat_input", value=st.session_state.selected_input)
     
     # Display chat history
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
-    
-    # Input field for user query
-    user_input = st.chat_input("Type your question here...")
     
     if user_input:
         # Add user message to chat history
@@ -86,6 +129,8 @@ def main():
         
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
+        # Clear the selected input after submission
+        st.session_state.selected_input = ""
 
 # Run the app
 if __name__ == "__main__":
