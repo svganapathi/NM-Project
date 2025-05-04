@@ -7,7 +7,7 @@ This project implements an intelligent customer support chatbot using Streamlit 
 - Interactive web interface powered by Streamlit
 - Rule-based responses for common customer support queries
 - Chat history persistence during the session
-- Easily extensible for integration with advanced NLP or AI models (e.g., xAI's Grok 3 API)
+- Easily extensible for integration with advanced NLP or AI models
 
 ## Prerequisites
 
@@ -59,7 +59,6 @@ This project implements an intelligent customer support chatbot using Streamlit 
 
 To enhance the chatbot with AI capabilities:
 
-- Integrate xAI's Grok 3 API (see xAI API documentation).
 - Add more response patterns in the get_chatbot_response function.
 - Incorporate NLP libraries like transformers or spacy for advanced intent recognition.
 
